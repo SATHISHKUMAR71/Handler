@@ -3,13 +3,14 @@ package com.example.handler
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    private var isRunning = false
+    private var isRunning = true
     private var counter = 0
     private lateinit var thread: Thread
     private lateinit var runnable:Runnable
@@ -20,27 +21,22 @@ class MainActivity : AppCompatActivity() {
         handler = Handler(Looper.getMainLooper())
 
         findViewById<Button>(R.id.buttonStart).setOnClickListener {
-            isRunning = true
-            thread = Thread {
+
+            Thread {
+                isRunning = true
                 while (isRunning) {
-                    try {
-                        Thread.sleep(10) // Simulate some work
-                        handler.post(kotlinx.coroutines.Runnable {
-                            findViewById<TextView>(R.id.textView).text = "Counter value: $counter"
-                        })
-                    } catch (e: InterruptedException) {
-                        // Handle interruption if needed
-                        println("Interrupted Exception")
-                        break
-                    }
+                    Thread.sleep(10)
+                    println("I: ${counter++}")
+                    handler.postAtTime({
+                        findViewById<TextView>(R.id.textView).text = "Counter value: ${counter}"
+                    },SystemClock.uptimeMillis()+1000)
                 }
-            }
-            thread.start()
+            }.start()
+
         }
 
         findViewById<Button>(R.id.buttonStop).setOnClickListener {
             isRunning = false
-            thread.interrupt() // Interrupt the thread if it's sleeping
         }
     }
 }
