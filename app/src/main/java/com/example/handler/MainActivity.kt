@@ -26,13 +26,15 @@ class MainActivity : AppCompatActivity() {
                 isRunning = true
                 while (isRunning) {
                     Thread.sleep(10)
-                    println("I: ${counter++}")
-                    handler.postAtTime({
+                    counter++
+                    handler.post{
                         findViewById<TextView>(R.id.textView).text = "Counter value: ${counter}"
-                    },SystemClock.uptimeMillis()+1000)
+                    }
+                    if(Thread.currentThread().isAlive){
+                        println("Thread is Alive")
+                    }
                 }
             }.start()
-
         }
 
         findViewById<Button>(R.id.buttonStop).setOnClickListener {
